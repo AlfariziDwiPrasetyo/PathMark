@@ -1,0 +1,41 @@
+generator client {
+    provider = "prisma-client-js"
+  }
+   
+  datasource db {
+    provider = "postgresql"
+    // Uses connection pooling
+    url = env("POSTGRES_PRISMA_URL")
+    // Uses direct connection, ⚠️ make sure to keep this to `POSTGRES_URL_NON_POOLING`
+    // or you'll have dangling databases from migrations
+    directUrl = env("POSTGRES_URL_NON_POOLING")
+  }
+   
+ model User {
+  id          Int          @id @default(autoincrement())
+  name        String
+  email       String       @unique
+  image       String
+  createdAt   DateTime     @default(now())
+  collections Collection[]
+}
+
+model Collection {
+  id        Int      @id @default(autoincrement())
+  name      String
+  userId    Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  media     Media[]
+}
+
+model Media {
+  id          Int      @id @default(autoincrement())
+  title       String
+  image       String
+  finished    Boolean @default(false)
+  progress    String      
+  collectionId Int
+  createdAt   DateTime @default(now())
+  collection  Collection @relation(fields: [collectionId], references: [id])
+}
